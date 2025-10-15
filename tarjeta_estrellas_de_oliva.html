@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estrellas de Oliva - Tarjeta Electrónica</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .business-card {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .card-header {
+            background-color: #8B0000;
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .card-header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 15px;
+        }
+        
+        .card-header p {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        .card-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 30px;
+        }
+        
+        .card-info {
+            flex: 1;
+            min-width: 300px;
+            padding-right: 20px;
+        }
+        
+        .card-info h3 {
+            color: #8B0000;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #FDBC2D;
+            padding-bottom: 8px;
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-item i {
+            color: #8B0000;
+            font-size: 1.2rem;
+            margin-right: 10px;
+            width: 25px;
+            text-align: center;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-call {
+            background-color: #25D366;
+            color: white;
+        }
+        
+        .btn-save {
+            background-color: #FDBC2D;
+            color: #333;
+        }
+        
+        .btn-share {
+            background-color: #1a2a6c;
+            color: white;
+        }
+        
+        .btn-analytics {
+            background-color: #6c1a8b;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+        
+        .card-qr {
+            flex: 0 0 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .qr-code {
+            width: 180px;
+            height: 180px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            padding: 10px;
+            background: white;
+        }
+        
+        .qr-info {
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .card-footer {
+            background-color: #FDBC2D;
+            padding: 15px;
+            text-align: center;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .music-icons {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .music-icons span {
+            margin: 0 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        /* Modal de Analytics */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #FDBC2D;
+            padding-bottom: 10px;
+        }
+        
+        .modal-title {
+            color: #8B0000;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .analytics-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #8B0000;
+        }
+        
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #8B0000;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .analytics-list {
+            margin-top: 20px;
+        }
+        
+        .analytics-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 600px) {
+            .card-content {
+                flex-direction: column;
+            }
+            
+            .card-info {
+                padding-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .analytics-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="business-card">
+        <div class="card-header">
+            <h1>ESTRELLAS DE OLIVA</h1>
+            <h2>Quinteto Musical Cubano</h2>
+            <p>Unidos por la música, brillando en cada nota</p>
+        </div>
+        
+        <div class="card-content">
+            <div class="card-info">
+                <h3>Información de Contacto</h3>
+                
+                <div class="info-item">
+                    <i class="fas fa-user"></i>
+                    <div>
+                        <strong>Director:</strong> Rene Oliva
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <i class="fas fa-phone"></i>
+                    <div>
+                        <strong>Teléfono:</strong> <span id="phone">+53 5843 8538</span>
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <i class="fas fa-music"></i>
+                    <div>
+                        <strong>Especialidad:</strong> Música Tradicional Cubana
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <i class="fas fa-users"></i>
+                    <div>
+                        <strong>Formación:</strong> Quinteto Musical
+                    </div>
+                </div>
+                
+                <div class="info-item">
+                    <i class="fas fa-globe-americas"></i>
+                    <div>
+                        <strong>Origen:</strong> Cuba
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-call" onclick="makeCall()">
+                        <i class="fas fa-phone"></i> Llamar
+                    </button>
+                    <button class="btn btn-save" onclick="saveContact()">
+                        <i class="fas fa-address-book"></i> Guardar Contacto
+                    </button>
+                    <button class="btn btn-share" onclick="shareCard()">
+                        <i class="fas fa-share-alt"></i> Compartir
+                    </button>
+                    <button class="btn btn-analytics" onclick="showAnalytics()">
+                        <i class="fas fa-chart-bar"></i> Analytics
+                    </button>
+                </div>
+                
+                <div class="music-icons">
+                    <span>🎵</span>
+                    <span>🎶</span>
+                    <span>🎺</span>
+                    <span>🎸</span>
+                    <span>🥁</span>
+                </div>
+            </div>
+            
+            <div class="card-qr">
+                <div class="qr-code" id="qrcode"></div>
+                <div class="qr-info">
+                    Escanee para guardar contacto
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer">
+            ¡Contáctenos para eventos y presentaciones!
+        </div>
+    </div>
+
+    <!-- Modal de Analytics -->
+    <div class="modal" id="analyticsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Analytics de la Tarjeta</h3>
+                <button class="close-btn" onclick="closeAnalytics()">&times;</button>
+            </div>
+            
+            <div class="analytics-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalViews">0</div>
+                    <div class="stat-label">Vistas Totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="uniqueVisitors">0</div>
+                    <div class="stat-label">Visitantes Únicos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="callsMade">0</div>
+                    <div class="stat-label">Llamadas Realizadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="qrScans">0</div>
+                    <div class="stat-label">Escaneos QR</div>
+                </div>
+            </div>
+            
+            <div class="analytics-list">
+                <h4>Actividad Reciente</h4>
+                <div id="activityList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de Analytics
+        const Analytics = {
+            data: {
+                totalViews: 0,
+                uniqueVisitors: new Set(),
+                callsMade: 0,
+                shares: 0,
+                qrScans: 0,
+                contactsSaved: 0,
+                activityLog: []
+            },
+            
+            init() {
+                this.loadFromStorage();
+                this.trackView();
+                this.setupVisibilityTracking();
+            },
+            
+            trackView() {
+                // Generar ID único para este visitante
+                let visitorId = localStorage.getItem('visitorId');
+                if (!visitorId) {
+                    visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem('visitorId', visitorId);
+                }
+                
+                this.data.uniqueVisitors.add(visitorId);
+                this.data.totalViews++;
+                
+                this.logActivity('Página vista', visitorId);
+                this.saveToStorage();
+            },
+            
+            trackCall() {
+                this.data.callsMade++;
+                this.logActivity('Llamada realizada');
+                this.saveToStorage();
+            },
+            
+            trackShare() {
+                this.data.shares++;
+                this.logActivity('Tarjeta compartida');
+                this.saveToStorage();
+            },
+            
+            trackQrScan() {
+                this.data.qrScans++;
+                this.logActivity('Código QR escaneado');
+                this.saveToStorage();
+            },
+            
+            trackContactSave() {
+                this.data.contactsSaved++;
+                this.logActivity('Contacto guardado');
+                this.saveToStorage();
+            },
+            
+            logActivity(action, visitorId = null) {
+                const timestamp = new Date().toLocaleString();
+                const activity = {
+                    action,
+                    timestamp,
+                    visitorId: visitorId || localStorage.getItem('visitorId')
+                };
+                
+                this.data.activityLog.unshift(activity);
+                // Mantener solo las últimas 50 actividades
+                if (this.data.activityLog.length > 50) {
+                    this.data.activityLog = this.data.activityLog.slice(0, 50);
+                }
+            },
+            
+            setupVisibilityTracking() {
+                // Rastrear cuando la tarjeta es visible
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) {
+                        this.trackView();
+                    }
+                });
+            },
+            
+            saveToStorage() {
+                const dataToSave = {
+                    ...this.data,
+                    uniqueVisitors: Array.from(this.data.uniqueVisitors)
+                };
+                localStorage.setItem('businessCardAnalytics', JSON.stringify(dataToSave));
+            },
+            
+            loadFromStorage() {
+                const saved = localStorage.getItem('businessCardAnalytics');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    this.data = {
+                        ...parsed,
+                        uniqueVisitors: new Set(parsed.uniqueVisitors)
+                    };
+                }
+            },
+            
+            getStats() {
+                return {
+                    totalViews: this.data.totalViews,
+                    uniqueVisitors: this.data.uniqueVisitors.size,
+                    callsMade: this.data.callsMade,
+                    shares: this.data.shares,
+                    qrScans: this.data.qrScans,
+                    contactsSaved: this.data.contactsSaved,
+                    activityLog: this.data.activityLog
+                };
+            }
+        };
+
+        // Generar código QR
+        function generateQRCode() {
+            const qr = qrcode(0, 'M');
+            qr.addData(`BEGIN:VCARD
+VERSION:3.0
+FN:Estrellas de Oliva
+ORG:Quinteto Musical Cubano
+TEL:+5358438538
+TITLE:Música Tradicional Cubana
+NOTE:Director: Rene Oliva
+END:VCARD`);
+            qr.make();
+            
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = qr.createImgTag(4);
+            
+            // Track QR generation
+            Analytics.trackQrScan();
+        }
+        
+        // Funcionalidades interactivas
+        function makeCall() {
+            Analytics.trackCall();
+            window.location.href = 'tel:+5358438538';
+        }
+        
+        function saveContact() {
+            Analytics.trackContactSave();
+            alert('Contacto guardado: Estrellas de Oliva\nTel: +53 5843 8538');
+        }
+        
+        function shareCard() {
+            Analytics.trackShare();
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Estrellas de Oliva - Quinteto Musical Cubano',
+                    text: 'Conoce al quinteto Estrellas de Oliva, especialistas en música tradicional cubana',
+                    url: window.location.href
+                });
+            } else {
+                alert('Comparte esta página manualmente');
+            }
+        }
+        
+        // Mostrar analytics
+        function showAnalytics() {
+            const stats = Analytics.getStats();
+            
+            document.getElementById('totalViews').textContent = stats.totalViews;
+            document.getElementById('uniqueVisitors').textContent = stats.uniqueVisitors;
+            document.getElementById('callsMade').textContent = stats.callsMade;
+            document.getElementById('qrScans').textContent = stats.qrScans;
+            
+            // Mostrar actividad reciente
+            const activityList = document.getElementById('activityList');
+            activityList.innerHTML = '';
+            
+            stats.activityLog.slice(0, 10).forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'analytics-item';
+                item.innerHTML = `
+                    <span>${activity.action}</span>
+                    <small>${activity.timestamp}</small>
+                `;
+                activityList.appendChild(item);
+            });
+            
+            document.getElementById('analyticsModal').style.display = 'flex';
+        }
+        
+        function closeAnalytics() {
+            document.getElementById('analyticsModal').style.display = 'none';
+        }
+        
+        // Inicializar cuando cargue la página
+        document.addEventListener('DOMContentLoaded', function() {
+            Analytics.init();
+            generateQRCode();
+            
+            // Cerrar modal al hacer clic fuera
+            document.getElementById('analyticsModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAnalytics();
+                }
+            });
+        });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</body>
+</html>
